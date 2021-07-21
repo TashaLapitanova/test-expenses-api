@@ -16,12 +16,16 @@ Rails.application.routes.draw do
     delete "delete_income", on: :member
   end
 
-  resource :balances do
-    get 'get_total', on: :member
-  end
+  # resource :balances do
+  #   get 'get_total', on: :member
+  #   get 'get_data_within_period', on: :member
+  # end
 
   resource :users, only: [:create] do
     post '/login', to: "users#login"
   end
+
+  get '/stats/get_total_balance', to: "stats#get_total"
+  get '/stats/get_balance_from/:start_date/to/:end_date', to: "stats#get_stats_within_period"
 
 end
