@@ -16,6 +16,10 @@ Rails.application.routes.draw do
     delete "delete_income", on: :member
   end
 
+  resource :balances do
+    get 'get_total', on: :member
+  end
+
   resource :users, only: [:create] do
     post '/login', to: "users#login"
   end

@@ -1,5 +1,4 @@
 class ExpenseApiController < ApplicationController
-  before_action :authorized
 
   #GET
   def get_all

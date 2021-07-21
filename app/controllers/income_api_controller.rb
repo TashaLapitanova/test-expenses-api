@@ -1,5 +1,4 @@
 class IncomeApiController < ApplicationController
-  before_action :authorized
 
   #GET
   def get_all
