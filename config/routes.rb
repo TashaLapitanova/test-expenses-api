@@ -8,6 +8,14 @@ Rails.application.routes.draw do
     delete "delete_expense", on: :member
   end
 
+  resources :income_api do
+    get 'get_all', on: :collection
+    get 'get_income', on: :member
+    post 'new_income', on: :collection
+    put 'update_income', on: :member
+    delete "delete_income", on: :member
+  end
+
   resource :users, only: [:create] do
     post '/login', to: "users#login"
   end

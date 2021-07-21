@@ -3,7 +3,6 @@ class ExpenseApiController < ApplicationController
 
   #GET
   def get_all
-    #Rails.logger.info("user: " + @user.username)
     @expenses = Expense.where(user_id: @user.id.to_i)
     render json: @expenses
   end
