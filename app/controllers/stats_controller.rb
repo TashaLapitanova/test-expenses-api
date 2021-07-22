@@ -30,4 +30,28 @@ class StatsController < ApplicationController
     end
   end
 
+  #GET
+  def get_all_users_with_stats_within_period
+    if params[:start_date] && params[:end_date]
+      begin
+        start_date = Date.parse(params[:start_date])
+        end_date = Date.parse(params[:end_date])
+        response = Array.new
+        users = User.select(:username, :id).joins(:expenses, :incomes).distinct.includes(:expenses, :incomes)
+        users.each do |user|
+          response.push({
+            name: user.username,
+            id: user.id,
+            expenses: user.expenses.within_period(start_date, end_date),
+            incomes: user.incomes.within_period(start_date, end_date)})
+        end
+        render json: response
+      rescue => e
+        render json: {"Message": e}, status: :bad_request
+      end
+    else
+      render json: {"Message": "Please provide start and end date of the period"}, status: :bad_request
+    end
+  end
+
 end

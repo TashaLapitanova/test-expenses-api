@@ -23,6 +23,7 @@ Rails.application.routes.draw do
   resources :stats do
     get 'get_total_balance', on: :collection
     get 'get_balance_within_period', on: :collection
+    get 'get_all_users_with_stats_within_period', on: :collection
   end
 
 end
