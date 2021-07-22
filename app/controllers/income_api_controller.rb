@@ -2,54 +2,55 @@ class IncomeApiController < ApplicationController
 
   #GET
   def get_all
-    @incomes = Income.where(user_id: @user.id.to_i)
+    @incomes = @user.incomes
     render json: @incomes
   end
 
   #GET
   def get_income
-    @income = Income.find(params[:id])
-    if @income.user_id === @user.id
+    begin
+      @income = @user.incomes.find(params[:id])
       render json: @income
-    else
-      render nothing: true, status: :unauthorized
+    rescue
+      render json: {"Message": "Income not found or not available"}, status: :not_found
     end
   end
 
   #POST
   def new_income
     amount = params[:amount]&.to_f
-    @income = Income.create!(title: params[:title], amount: amount, date: params[:date], user_id: @user.id)
-    if @income.save
+    begin
+      @income = Income.create!(title: params[:title], amount: amount, date: params[:date], user_id: @user.id)
       render json: @income
-    else
-      render nothing: true, status: :bad_request
+    rescue
+      render json: {"Message": "Invalid income data, cannot add income"}, status: :bad_request
     end
   end
 
   #PUT
   def update_income
     amount = params[:amount]&.to_f
-    @income = Income.find(params[:id])
-    if @income.user_id === @user.id
-      if @income.update!(title: params[:title], amount: amount, date: params[:date])
+    begin
+      @income = @user.incomes.find(params[:id])
+      begin
+        @income.update!(title: params[:title], amount: amount, date: params[:date])
         render json: @income
-      else
-        render nothing: true, status: :bad_request
+      rescue
+        render json: {"Message": "Invalid income data, cannot update income"}, status: :bad_request
       end
-    else
-      render nothing: true, status: :unauthorized
+    rescue
+      render json: {"Message": "Income not found or not available"}, status: :not_found
     end
   end
 
   #DELETE
   def delete_income
-    @income = Income.find(params[:id])
-    if @income.user_id === @user.id
+    begin
+      @income = @user.incomes.find(params[:id])
       @income.destroy
-      render json: {message: "Income deleted"}
-    else
-      render nothing: true, status: :unauthorized
+      render json: {message: "Income #{@income.title} deleted"}
+    rescue
+      render json: {"Message": "Income not found or not available"}, status: :not_found
     end
   end
 

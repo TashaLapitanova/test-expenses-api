@@ -1,5 +1,4 @@
 class UsersController < ApplicationController
-  before_action :authorized, only: [:auto_login]
 
   #POST
   def create

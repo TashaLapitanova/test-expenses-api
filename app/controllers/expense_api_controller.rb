@@ -2,54 +2,55 @@ class ExpenseApiController < ApplicationController
 
   #GET
   def get_all
-    @expenses = Expense.where(user_id: @user.id.to_i)
+    @expenses = @user.expenses
     render json: @expenses
   end
 
   #GET
   def get_expense
-    @expense = Expense.find(params[:id])
-    if @expense.user_id === @user.id
+    begin
+      @expense = @user.expenses.find(params[:id])
       render json: @expense
-    else
-      render nothing: true, status: :unauthorized
+    rescue
+      render json: {"Message": "Expense not found or not available"}
     end
   end
 
   #POST
   def new_expense
     amount = params[:amount]&.to_f
-    @expense = Expense.create!(title: params[:title], amount: amount, date: params[:date], user_id: @user.id)
-    if @expense.save
+    begin
+      @expense = Expense.create!(title: params[:title], amount: amount, date: params[:date], user_id: @user.id)
       render json: @expense
-    else
-      render nothing: true, status: :bad_request
+    rescue
+      render json: {"Message": "Invalid expense data, cannot add expense"}, status: :bad_request
     end
   end
 
   #PUT
   def update_expense
     amount = params[:amount]&.to_f
-    @expense = Expense.find(params[:id])
-    if @expense.user_id === @user.id
-      if @expense.update!(title: params[:title], amount: amount, date: params[:date])
+    begin
+      @expense = @user.expenses.find(params[:id])
+      begin
+        @expense.update!(title: params[:title], amount: amount, date: params[:date])
         render json: @expense
-      else
-        render nothing: true, status: :bad_request
+      rescue
+        render json: {"Message": "Invalid expense data, cannot update expense"}, status: :bad_request
       end
-    else
-      render nothing: true, status: :unauthorized
+    rescue
+      render json: {"Message": "Expense not found or not available"}
     end
   end
 
   #DELETE
   def delete_expense
-    @expense = Expense.find(params[:id])
-    if @expense.user_id === @user.id
+    begin
+      @expense = @user.expenses.find(params[:id])
       @expense.destroy
-      render json: {message: "Expense deleted"}
-    else
-      render nothing: true, status: :unauthorized
+      render json: {message: "Expense #{@expense.title} deleted"}
+    rescue
+      render json: {"Message": "Expense not found or not available"}
     end
   end
 
