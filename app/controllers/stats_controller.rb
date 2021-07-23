@@ -1,6 +1,6 @@
 class StatsController < ApplicationController
 
-  #Scope?
+  # total amount - controller method
 
   #GET
   def get_total_balance
@@ -31,21 +31,18 @@ class StatsController < ApplicationController
   end
 
   #GET
-  def get_all_users_with_stats_within_period
+  def get_users_with_stats_within_period
     if params[:start_date] && params[:end_date]
       begin
         start_date = Date.parse(params[:start_date])
         end_date = Date.parse(params[:end_date])
-        response = Array.new
-        users = User.select(:username, :id).joins(:expenses, :incomes).distinct.includes(:expenses, :incomes)
-        users.each do |user|
-          response.push({
-            name: user.username,
-            id: user.id,
-            expenses: user.expenses.within_period(start_date, end_date),
-            incomes: user.incomes.within_period(start_date, end_date)})
-        end
-        render json: response
+        period = start_date..end_date
+
+        users = User.select(:username, :id).distinct
+                    .joins(:expenses, :incomes)
+                    .includes(:expenses, :incomes)
+                    .where(expenses: {date: period}, incomes: {date: period})
+        render :json => users.to_json(:include => [{ expenses: {} }, {incomes: {}}])
       rescue => e
         render json: {"Message": e}, status: :bad_request
       end
