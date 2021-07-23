@@ -50,5 +50,35 @@ class StatsController < ApplicationController
       render json: {"Message": "Please provide start and end date of the period"}, status: :bad_request
     end
   end
+  #
+  #GET
+  # def get_users_with_stats_within_period
+  #   if params[:start_date] && params[:end_date]
+  #     begin
+  #       start_date = Date.parse(params[:start_date])
+  #       end_date = Date.parse(params[:end_date])
+  #
+  #       expenses = Expense.within_period(start_date, end_date)
+  #       incomes = Income.within_period(start_date, end_date)
+  #       user_ids = expenses.map{|exp| exp.user_id}.push(incomes.map{|inc| inc.user_id}).flatten.uniq
+  #       users = User.where(id: user_ids)
+  #
+  #       response = Array.new
+  #       users.each do |user|
+  #         response.push({
+  #                         username: user.username,
+  #                         id: user.id,
+  #                         expenses: expenses.select{|exp| exp.user_id == user.id},
+  #                         incomes: incomes.select{|inc| inc.user_id == user.id}
+  #                       })
+  #       end
+  #       render json: response
+  #     rescue => e
+  #       render json: {"Message": e}, status: :bad_request
+  #     end
+  #   else
+  #     render json: {"Message": "Please provide start and end date of the period"}, status: :bad_request
+  #   end
+  # end
 
 end
